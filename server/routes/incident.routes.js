@@ -5,6 +5,7 @@ import {
   createIncident,
   updateIncident,
   deleteIncident,
+  addComment,
 } from '../controllers/incident.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import { roleMiddleware } from '../middleware/role.middleware.js';
@@ -18,5 +19,6 @@ router.get('/:id', getIncidentById);
 router.post('/', createIncident);
 router.patch('/:id', updateIncident);
 router.delete('/:id', roleMiddleware(['ADMIN']), deleteIncident);
+router.post('/:id/comments', addComment);
 
 export default router;
