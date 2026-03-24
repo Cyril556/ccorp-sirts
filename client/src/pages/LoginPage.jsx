@@ -17,7 +17,7 @@ export default function LoginPage() {
     finally { setLoading(false); }
   };
 
-  const DEMOS = [{role:'Admin',email:'admin@ccorp.local',pass:'Admin@1234'},{role:'SOC Lead',email:'soclead@ccorp.local',pass:'Lead@1234'},{role:'Analyst',email:'analyst@ccorp.local',pass:'Analyst@1234'}];
+  const DEMOS = [{role:'Admin',email:'admin@ccorp.local',pass:'Admin@1234'},{role:'SOC Lead',email:'lead@ccorp.local',pass:'Lead@1234'},{role:'Analyst',email:'analyst@ccorp.local',pass:'Analyst@1234'}];
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4 relative overflow-hidden">
