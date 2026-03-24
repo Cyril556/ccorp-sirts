@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "CCorp SIRTS Backend API",
   "main": "server.js",
+  "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "start": "npx prisma migrate deploy && node server.js",
     "dev": "nodemon server.js",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "node prisma/seed.js",
