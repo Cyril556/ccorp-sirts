@@ -83,3 +83,19 @@ export const deleteIncident = async (req, res, next) => {
     return res.json({ success: true, data: { message: 'Incident deleted' } });
   } catch (err) { next(err); }
 };
+
+export const addComment = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { body } = req.body;
+    if (!body || !body.trim()) return res.status(400).json({ success: false, error: 'Comment body is required' });
+    const existing = await prisma.incident.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ success: false, error: 'Incident not found' });
+    const comment = await prisma.comment.create({
+      data: { incidentId: id, userId: req.user.id, body },
+      include: { user: { select: { id: true, name: true } } },
+    });
+    await createAuditLog(id, req.user.id, 'COMMENT_ADDED', 'Comment added');
+    return res.status(201).json({ success: true, data: comment });
+  } catch (err) { next(err); }
+};
