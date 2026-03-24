@@ -14,13 +14,16 @@ enum Role {
   ADMIN
   SOC_LEAD
   ANALYST
+  VIEWER
 }
 
 enum Category {
   PHISHING
   MALWARE
-  UNAUTHORISED_ACCESS
-  DOS
+  UNAUTHORIZED_ACCESS
+  DDoS
+  DATA_BREACH
+  INSIDER_THREAT
   OTHER
 }
 
@@ -56,22 +59,22 @@ model User {
 }
 
 model Incident {
-  id             String    @id @default(cuid())
-  title          String
-  description    String
-  category       Category
-  severity       Severity
-  status         Status    @default(OPEN)
-  sourceIP       String?
-  affectedAsset  String?
-  assignedToId   String?
-  createdById    String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  resolvedAt     DateTime?
+  id            String    @id @default(cuid())
+  title         String
+  description   String
+  category      Category
+  severity      Severity
+  status        Status    @default(OPEN)
+  sourceIP      String?
+  affectedAsset String?
+  assignedToId  String?
+  createdById   String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  resolvedAt    DateTime?
 
-  assignedTo User?      @relation("AssignedTo", fields: [assignedToId], references: [id])
-  createdBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedTo User?     @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdBy  User      @relation("CreatedBy", fields: [createdById], references: [id])
   auditLogs  AuditLog[]
   comments   Comment[]
 
