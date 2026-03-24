@@ -40,7 +40,7 @@ export default function IncidentDetailPage() {
     if (!comment.trim()) return;
     setSubmitting(true); setError(''); setSuccess('');
     try {
-      await api.post('/incidents/' + id + '/comments', { text: comment });
+      await api.post('/incidents/' + id + '/comments', { body: comment });
       setComment('');
       setSuccess('Comment added.');
       fetchIncident();
@@ -88,18 +88,14 @@ export default function IncidentDetailPage() {
 
         {/* Title Card */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-gray-500 font-mono">INC-{String(incident.id).padStart(4,'0')}</span>
-              </div>
-              <h1 className="text-xl font-bold text-white mb-3">{incident.title}</h1>
-              <div className="flex flex-wrap gap-2">
-                <span className={SEV_MAP[incident.severity] || 'badge-low'}>{incident.severity}</span>
-                <span className={STATUS_MAP[incident.status] || 'status-open'}>{incident.status?.replace('_',' ')}</span>
-                <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded-full">{incident.category?.replace('_',' ')}</span>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs text-gray-500 font-mono">INC-{String(incident.id).padStart(4,'0')}</span>
+          </div>
+          <h1 className="text-xl font-bold text-white mb-3">{incident.title}</h1>
+          <div className="flex flex-wrap gap-2">
+            <span className={SEV_MAP[incident.severity] || 'badge-low'}>{incident.severity}</span>
+            <span className={STATUS_MAP[incident.status] || 'status-open'}>{incident.status?.replace('_',' ')}</span>
+            <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded-full">{incident.category?.replace('_',' ')}</span>
           </div>
         </div>
 
@@ -122,7 +118,7 @@ export default function IncidentDetailPage() {
               {[['Reported', fmt(incident.createdAt)], ['Last Updated', fmt(incident.updatedAt)], ['Resolved', fmt(incident.resolvedAt)]].map(([label, val]) => (
                 <div key={label} className="flex justify-between items-center">
                   <span className="text-xs text-gray-500">{label}</span>
-                  <span className="text-sm text-gray-200 font-mono text-xs">{val}</span>
+                  <span className="text-xs text-gray-200 font-mono">{val}</span>
                 </div>
               ))}
             </div>
@@ -163,17 +159,17 @@ export default function IncidentDetailPage() {
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Comments & Notes</h2>
           {incident.comments?.length > 0 ? (
             <div className="space-y-3 mb-4">
-              {incident.comments.map((c, i) => (
-                <div key={i} className="flex gap-3">
+              {incident.comments.map((c) => (
+                <div key={c.id} className="flex gap-3">
                   <div className="w-7 h-7 rounded-full bg-blue-600/30 flex items-center justify-center text-blue-400 text-xs font-bold shrink-0">
-                    {c.author?.name?.[0] || '?'}
+                    {c.user?.name?.[0] || '?'}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-gray-200">{c.author?.name || 'Unknown'}</span>
+                      <span className="text-sm font-medium text-gray-200">{c.user?.name || 'Unknown'}</span>
                       <span className="text-xs text-gray-500">{fmt(c.createdAt)}</span>
                     </div>
-                    <p className="text-sm text-gray-400">{c.text}</p>
+                    <p className="text-sm text-gray-400">{c.body}</p>
                   </div>
                 </div>
               ))}
@@ -200,17 +196,18 @@ export default function IncidentDetailPage() {
         </div>
 
         {/* Audit Log */}
-        {incident.auditLog?.length > 0 && (
+        {incident.auditLogs?.length > 0 && (
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Audit Log</h2>
             <div className="space-y-2">
-              {incident.auditLog.map((log, i) => (
-                <div key={i} className="flex items-start gap-3 text-xs">
+              {incident.auditLogs.map((log) => (
+                <div key={log.id} className="flex items-start gap-3 text-xs">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                   <div className="flex-1">
                     <span className="text-gray-300">{log.action}</span>
+                    {log.details && <span className="text-gray-500 ml-1">— {log.details}</span>}
                     {log.user && <span className="text-gray-500 ml-1">by {log.user.name}</span>}
-                    <span className="text-gray-600 ml-1">• {fmt(log.createdAt)}</span>
+                    <span className="text-gray-600 ml-1">• {fmt(log.timestamp)}</span>
                   </div>
                 </div>
               ))}
