@@ -19,7 +19,7 @@ export default function UsersPage() {
         setUsers(uRes.data.data || uRes.data);
         setIncidents(iRes.data.data || iRes.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load data');
+        setError(err.response?.data?.message || err.response?.data?.error || 'Failed to load data');
       }
     };
     fetchData();
@@ -27,24 +27,25 @@ export default function UsersPage() {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await api.put(`/users/${userId}/role`, { role: newRole });
+      await api.patch(`/users/${userId}`, { role: newRole });
       setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update role');
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to update role');
     }
   };
 
   const handleAssign = async (incidentId) => {
-    const assignedTo = assignMap[incidentId];
-    if (!assignedTo) return;
+    const assignedToId = assignMap[incidentId];
+    if (!assignedToId) return;
     try {
-      await api.put(`/incidents/${incidentId}/assign`, { assignedToId: assignedTo });
-      const assignedUser = users.find((u) => u.id === assignedTo);
+      await api.patch(`/incidents/${incidentId}`, { assignedToId });
+      const assignedUser = users.find((u) => u.id === assignedToId);
       setIncidents(incidents.map((i) =>
         i.id === incidentId ? { ...i, assignedTo: assignedUser } : i
       ));
+      setAssignMap({ ...assignMap, [incidentId]: '' });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to assign incident');
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to assign incident');
     }
   };
 
@@ -97,7 +98,7 @@ export default function UsersPage() {
                   onChange={(e) => setAssignMap({ ...assignMap, [inc.id]: e.target.value })}
                 >
                   <option value="">Select analyst</option>
-                  {users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
+                  {users.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.role})</option>)}
                 </select>
                 {' '}
                 <button onClick={() => handleAssign(inc.id)}>Assign</button>
