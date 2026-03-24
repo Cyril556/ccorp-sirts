@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.jsx';
 import Navbar from './components/Navbar.jsx';
-import LoginPage from './pages/LoginPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import IncidentsPage from './pages/IncidentsPage.jsx';
 import IncidentDetailPage from './pages/IncidentDetailPage.jsx';
@@ -10,7 +9,7 @@ import UsersPage from './pages/UsersPage.jsx';
 
 const PrivateRoute = ({ children, roles }) => {
   const { currentUser } = useAuth();
-  if (!currentUser) return <Navigate to="/login" replace />;
+  if (!currentUser) return <Navigate to="/dashboard" replace />;
   if (roles && !roles.includes(currentUser.role)) return <Navigate to="/dashboard" replace />;
   return children;
 };
@@ -20,7 +19,6 @@ export default function App() {
     <>
       <Navbar />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
         <Route path="/incidents" element={<PrivateRoute><IncidentsPage /></PrivateRoute>} />
         <Route path="/incidents/new" element={<PrivateRoute><NewIncidentPage /></PrivateRoute>} />
