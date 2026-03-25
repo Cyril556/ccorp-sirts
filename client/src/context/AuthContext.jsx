@@ -1,40 +1,39 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/axios.js';
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+// Mock users matching the seeded database
+const MOCK_USERS = [
+  { id: 'mock-admin-1', name: 'Alice Admin', email: 'admin@ccorp.local', password: 'Admin@1234', role: 'ADMIN' },
+  { id: 'mock-lead-1', name: 'Sam Lead', email: 'lead@ccorp.local', password: 'Lead@1234', role: 'SOC_LEAD' },
+  { id: 'mock-analyst-1', name: 'John Analyst', email: 'analyst@ccorp.local', password: 'Analyst@1234', role: 'ANALYST' },
+];
 
-  useEffect(() => {
-    const token = localStorage.getItem('sirts_token');
-    if (token) {
-      api.get('/auth/me')
-        .then((res) => setCurrentUser(res.data.data))
-        .catch(() => localStorage.removeItem('sirts_token'))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, []);
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('sirts_user');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    const { token, user } = res.data.data;
-    localStorage.setItem('sirts_token', token);
-    setCurrentUser(user);
-    return user;
+    const user = MOCK_USERS.find(
+      (u) => u.email === email && u.password === password
+    );
+    if (!user) throw new Error('Invalid credentials');
+    const { password: _, ...safeUser } = user;
+    localStorage.setItem('sirts_user', JSON.stringify(safeUser));
+    setCurrentUser(safeUser);
+    return safeUser;
   };
 
   const logout = () => {
-    localStorage.removeItem('sirts_token');
+    localStorage.removeItem('sirts_user');
     setCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, loading }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ currentUser, login, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 };
