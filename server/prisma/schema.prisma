@@ -1,29 +1,24 @@
-// CCorp SIRTS – Prisma Schema
-// Database: PostgreSQL
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
   ADMIN
   SOC_LEAD
   ANALYST
-  VIEWER
 }
 
-enum Category {
+enum IncidentCategory {
   PHISHING
   MALWARE
-  UNAUTHORIZED_ACCESS
-  DDoS
-  DATA_BREACH
-  INSIDER_THREAT
+  UNAUTHORISED_ACCESS
+  DOS
   OTHER
 }
 
@@ -34,7 +29,7 @@ enum Severity {
   LOW
 }
 
-enum Status {
+enum IncidentStatus {
   OPEN
   IN_PROGRESS
   ESCALATED
@@ -43,42 +38,38 @@ enum Status {
 }
 
 model User {
-  id           String     @id @default(cuid())
+  id           String    @id @default(cuid())
   name         String
-  email        String     @unique
+  email        String    @unique
   passwordHash String
-  role         Role       @default(ANALYST)
-  createdAt    DateTime   @default(now())
+  role         Role      @default(ANALYST)
+  createdAt    DateTime  @default(now())
 
   assignedIncidents Incident[] @relation("AssignedTo")
   createdIncidents  Incident[] @relation("CreatedBy")
   auditLogs         AuditLog[]
   comments          Comment[]
-
-  @@map("users")
 }
 
 model Incident {
-  id            String    @id @default(cuid())
-  title         String
-  description   String
-  category      Category
-  severity      Severity
-  status        Status    @default(OPEN)
-  sourceIP      String?
-  affectedAsset String?
-  assignedToId  String?
-  createdById   String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  resolvedAt    DateTime?
+  id             String           @id @default(cuid())
+  title          String
+  description    String
+  category       IncidentCategory
+  severity       Severity
+  status         IncidentStatus   @default(OPEN)
+  sourceIP       String?
+  affectedAsset  String?
+  assignedToId   String?
+  createdById    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  resolvedAt     DateTime?
 
-  assignedTo User?     @relation("AssignedTo", fields: [assignedToId], references: [id])
-  createdBy  User      @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedTo User?      @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
   auditLogs  AuditLog[]
   comments   Comment[]
-
-  @@map("incidents")
 }
 
 model AuditLog {
@@ -91,8 +82,6 @@ model AuditLog {
 
   incident Incident @relation(fields: [incidentId], references: [id])
   user     User     @relation(fields: [userId], references: [id])
-
-  @@map("audit_logs")
 }
 
 model Comment {
@@ -104,6 +93,4 @@ model Comment {
 
   incident Incident @relation(fields: [incidentId], references: [id])
   user     User     @relation(fields: [userId], references: [id])
-
-  @@map("comments")
 }
