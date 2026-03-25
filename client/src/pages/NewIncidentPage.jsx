@@ -1,158 +1,96 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import { useAuth } from '../context/AuthContext.jsx';
+import { MOCK_INCIDENTS } from '../data/mockData.js';
 
-const CATEGORIES = ['MALWARE','PHISHING','UNAUTHORIZED_ACCESS','DDoS','DATA_BREACH','INSIDER_THREAT','OTHER'];
-const SEVERITIES = ['LOW','MEDIUM','HIGH','CRITICAL'];
-
-const inputCls = 'w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 placeholder-gray-500';
-const labelCls = 'block text-xs font-medium text-gray-400 mb-1.5';
+const CATEGORIES = ['PHISHING','MALWARE','UNAUTHORISED_ACCESS','DOS','OTHER'];
+const SEVERITIES = ['CRITICAL','HIGH','MEDIUM','LOW'];
 
 export default function NewIncidentPage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    title: '',
-    category: 'MALWARE',
-    severity: 'LOW',
-    sourceIP: '',
-    affectedAsset: '',
-    description: '',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ title:'', description:'', category:'PHISHING', severity:'MEDIUM', sourceIP:'', affectedAsset:'' });
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handle = e => setForm(f => ({...f, [e.target.name]: e.target.value}));
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      await api.post('/incidents', form);
-      navigate('/incidents');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create incident');
-    } finally {
-      setLoading(false);
-    }
+    const newInc = {
+      id: `inc-${Date.now()}`,
+      ...form,
+      status: 'OPEN',
+      createdById: currentUser.id,
+      assignedToId: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      resolvedAt: null,
+    };
+    MOCK_INCIDENTS.unshift(newInc);
+    setSubmitted(true);
+    setTimeout(() => navigate('/incidents'), 1500);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-950 px-4 py-8">
-      <div className="max-w-2xl mx-auto">
+  if (submitted) return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+        </div>
+        <h2 className="text-white font-semibold text-lg">Incident Created</h2>
+        <p className="text-gray-500 text-sm mt-1">Redirecting to incident registry...</p>
+      </div>
+    </div>
+  );
 
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <button onClick={() => navigate('/incidents')} className="text-gray-400 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+  return (
+    <div className="min-h-screen bg-gray-950 p-6 fade-in">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6">
+          <button onClick={()=>navigate(-1)} className="text-gray-500 hover:text-gray-300 text-sm flex items-center gap-1 mb-3 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            Back
           </button>
-          <div>
-            <h1 className="text-xl font-bold text-white">Report New Incident</h1>
-            <p className="text-gray-500 text-sm mt-0.5">File a new security incident for investigation</p>
-          </div>
+          <h1 className="text-2xl font-bold text-white">New <span className="text-blue-400">Incident</span></h1>
+          <p className="text-gray-500 text-sm mt-1">Log a new security incident for investigation</p>
         </div>
 
-        {/* Form Card */}
         <form onSubmit={handleSubmit} className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-5">
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
-              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              {error}
-            </div>
-          )}
-
-          {/* Title */}
           <div>
-            <label className={labelCls}>Incident Title <span className="text-red-400">*</span></label>
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Ransomware detected on FINANCE-PC-01"
-              className={inputCls}
-            />
+            <label className="block text-sm font-medium text-gray-300 mb-1">Title <span className="text-red-400">*</span></label>
+            <input name="title" value={form.title} onChange={handle} required placeholder="Brief incident title" className="input w-full" />
           </div>
-
-          {/* Category + Severity */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Description <span className="text-red-400">*</span></label>
+            <textarea name="description" value={form.description} onChange={handle} required rows={5} placeholder="Detailed description of the incident..." className="input w-full resize-none" />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelCls}>Category <span className="text-red-400">*</span></label>
-              <select name="category" value={form.category} onChange={handleChange} className={inputCls}>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
+              <select name="category" value={form.category} onChange={handle} className="select w-full">
                 {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_',' ')}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelCls}>Severity <span className="text-red-400">*</span></label>
-              <select name="severity" value={form.severity} onChange={handleChange} className={inputCls}>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Severity</label>
+              <select name="severity" value={form.severity} onChange={handle} className="select w-full">
                 {SEVERITIES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
           </div>
-
-          {/* Source IP + Affected Asset */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelCls}>Source IP</label>
-              <input
-                name="sourceIP"
-                value={form.sourceIP}
-                onChange={handleChange}
-                placeholder="e.g. 192.168.1.45"
-                className={inputCls}
-              />
+              <label className="block text-sm font-medium text-gray-300 mb-1">Source IP</label>
+              <input name="sourceIP" value={form.sourceIP} onChange={handle} placeholder="e.g. 192.168.1.1" className="input w-full font-mono" />
             </div>
             <div>
-              <label className={labelCls}>Affected Asset</label>
-              <input
-                name="affectedAsset"
-                value={form.affectedAsset}
-                onChange={handleChange}
-                placeholder="e.g. FINANCE-PC-01"
-                className={inputCls}
-              />
+              <label className="block text-sm font-medium text-gray-300 mb-1">Affected Asset</label>
+              <input name="affectedAsset" value={form.affectedAsset} onChange={handle} placeholder="e.g. WEB-PROD-01" className="input w-full font-mono" />
             </div>
           </div>
-
-          {/* Description */}
-          <div>
-            <label className={labelCls}>Description <span className="text-red-400">*</span></label>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              required
-              rows={5}
-              placeholder="Describe what happened, what was observed, and any initial findings..."
-              className={inputCls + ' resize-none'}
-            />
-          </div>
-
-          {/* Reporter info */}
-          <div className="bg-gray-800/50 rounded-lg px-4 py-3 flex items-center gap-2">
-            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-            <span className="text-xs text-gray-400">Reporting as <span className="text-gray-200 font-medium">{currentUser?.name}</span> ({currentUser?.role?.replace('_',' ')})</span>
-          </div>
-
-          {/* Actions */}
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => navigate('/incidents')}
-              className="flex-1 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium rounded-lg transition-colors border border-gray-700"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
-            >
-              {loading ? 'Submitting...' : 'Submit Incident'}
-            </button>
+            <button type="submit" className="btn-primary flex-1">Create Incident</button>
+            <button type="button" onClick={()=>navigate(-1)} className="flex-1 px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:bg-gray-800 transition-colors text-sm">Cancel</button>
           </div>
         </form>
       </div>
