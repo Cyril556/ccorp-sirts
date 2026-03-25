@@ -7,6 +7,7 @@ import IncidentsPage from './pages/IncidentsPage.jsx';
 import IncidentDetailPage from './pages/IncidentDetailPage.jsx';
 import NewIncidentPage from './pages/NewIncidentPage.jsx';
 import UsersPage from './pages/UsersPage.jsx';
+import ReportsPage from './pages/ReportsPage.jsx';
 
 const PrivateRoute = ({ children, roles }) => {
   const { currentUser } = useAuth();
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/incidents" element={<PrivateRoute><IncidentsPage /></PrivateRoute>} />
         <Route path="/incidents/new" element={<PrivateRoute><NewIncidentPage /></PrivateRoute>} />
         <Route path="/incidents/:id" element={<PrivateRoute><IncidentDetailPage /></PrivateRoute>} />
+                <Route path="/reports" element={<PrivateRoute><ReportsPage /></PrivateRoute>} />
         <Route path="/users" element={<PrivateRoute roles={['ADMIN']}><UsersPage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to={currentUser ? '/dashboard' : '/login'} replace />} />
       </Routes>
