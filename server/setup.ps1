@@ -1,9 +1,9 @@
 # =======================================
-# CCorp SIRTS — Windows PowerShell Setup
+# CCorp SIRTS - Windows PowerShell Setup
 # =======================================
 
 Write-Host "==============================="
-Write-Host " CCorp SIRTS — Server Setup"
+Write-Host " CCorp SIRTS - Server Setup"
 Write-Host "==============================="
 
 # 1. Install dependencies
@@ -14,27 +14,13 @@ npm install
 $envPath = ".env"
 if (-Not (Test-Path $envPath)) {
     Write-Host "[2/5] Creating .env file..."
-    $envContent = @"
-# =============================================
-# CCorp SIRTS — Server Environment Variables
-# =============================================
-
-# Supabase Pooled Connection (Prisma runtime)
-DATABASE_URL="postgresql://postgres.tvjyllnfuptdcbirjvev:q8RtF5KEJWBIf3bs@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
-
-# Supabase Direct Connection (Prisma migrate)
-DIRECT_URL="postgresql://postgres.tvjyllnfuptdcbirjvev:q8RtF5KEJWBIf3bs@aws-1-eu-central-2.pooler.supabase.com:5432/postgres"
-
-# JWT Secret
-JWT_SECRET="ccorp_sirts_super_secret_2026"
-
-# Server Port
-PORT=5000
-"@
-    $envContent | Out-File -FilePath $envPath -Encoding utf8 -NoNewline
+    Add-Content $envPath 'DATABASE_URL="postgresql://postgres.tvjyllnfuptdcbirjvev:q8RtF5KEJWBIf3bs@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?pgbouncer=true"'
+    Add-Content $envPath 'DIRECT_URL="postgresql://postgres.tvjyllnfuptdcbirjvev:q8RtF5KEJWBIf3bs@aws-1-eu-central-2.pooler.supabase.com:5432/postgres"'
+    Add-Content $envPath 'JWT_SECRET="ccorp_sirts_super_secret_2026"'
+    Add-Content $envPath 'PORT=5000'
     Write-Host "  .env created successfully."
 } else {
-    Write-Host "[2/5] .env already exists — skipping."
+    Write-Host "[2/5] .env already exists - skipping."
 }
 
 # 3. Generate Prisma client
