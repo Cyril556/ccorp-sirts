@@ -14,6 +14,7 @@ async function main() {
   const adminHash   = await bcrypt.hash('Admin@1234', 10);
   const leadHash    = await bcrypt.hash('Lead@1234',  10);
   const analystHash = await bcrypt.hash('Analyst@1234', 10);
+    const viewerHash   = await bcrypt.hash('Viewer@1234', 10);
 
   const admin = await prisma.user.create({
     data: { name: 'Alice Admin', email: 'admin@ccorp.local', passwordHash: adminHash, role: 'ADMIN' },
@@ -23,6 +24,10 @@ async function main() {
   });
   const analyst = await prisma.user.create({
     data: { name: 'John Analyst', email: 'analyst@ccorp.local', passwordHash: analystHash, role: 'ANALYST' },
+  });
+
+    const viewer = await prisma.user.create({
+    data: { name: 'Val Viewer', email: 'viewer@ccorp.local', passwordHash: viewerHash, role: 'VIEWER' },
   });
 
   console.log('Users created.');
