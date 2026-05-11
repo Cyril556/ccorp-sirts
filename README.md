@@ -134,6 +134,7 @@ cd ../client && npm install
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/ccorp_sirts"
 JWT_SECRET="your-super-secret-jwt-key"
 PORT=5000
+DIRECT_URL="postgresql://USER:PASSWORD@localhost:5432/ccorp_sirts"
 
 # client/.env
 VITE_API_URL=http://localhost:5000/api
