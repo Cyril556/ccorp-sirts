@@ -6,6 +6,7 @@ export const MOCK_USERS = [
   { id: 'u1', name: 'Alice Admin',   email: 'admin@ccorp.local',   role: 'ADMIN',     createdAt: '2026-01-10T08:00:00Z' },
   { id: 'u2', name: 'Sam Lead',      email: 'lead@ccorp.local',    role: 'SOC_LEAD',  createdAt: '2026-01-12T09:00:00Z' },
   { id: 'u3', name: 'John Analyst',  email: 'analyst@ccorp.local', role: 'ANALYST',   createdAt: '2026-01-15T10:00:00Z' },
+    { id: 'u4', name: 'Val Viewer',  email: 'viewer@ccorp.local', role: 'VIEWER',  createdAt: '2026-01-20T11:00:00Z' },
 ];
 
 export const MOCK_INCIDENTS = [
