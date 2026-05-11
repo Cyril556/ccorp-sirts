@@ -124,7 +124,7 @@ cd ccorp-sirts
 cd server && npm install
 
 # Install client dependencies
-cd ../client && npm install
+cd client && npm install
 ```
 
 ### 2. Configure Environment
@@ -155,11 +155,11 @@ npx prisma generate
 npx prisma db seed
 ```
 
-### 4. Run Development Servers
+### 4. Run Development Server (Frontend)
 
 ```bash
 # Terminal 1 — Backend (port 5000)
-cd server && npm run dev
+cd client && npm run dev
 
 # Terminal 2 — Frontend (port 5173)
 cd client && npm run dev
