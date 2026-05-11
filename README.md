@@ -1,21 +1,53 @@
 # CCorp SIRTS
-
 **Security Incident Response & Ticketing System** — BSc (Hons) Cybersecurity & Networking | Final Year Project
 
-> A full-stack web application for Security Operations Centre (SOC) teams to report, track, triage, and resolve security incidents with role-based access control, real-time dashboards, and a complete audit trail.
+> A full-stack SOC web application for reporting, triaging, tracking, and resolving security incidents — with role-based access control, real-time dashboards, CVE enrichment, and a complete audit trail.
 
 ---
 
-## Features
+## Why This Exists
 
-- **Role-Based Access Control** — ADMIN, SOC_LEAD, ANALYST, VIEWER roles with protected routes
-- **Incident Lifecycle Management** — Create, update, escalate, resolve, and close incidents
-- **SOC Dashboard** — Bar charts (incidents by day), pie charts (by category), stat cards, recent incidents feed
-- **Incident Detail View** — Full incident metadata, status updates, comments/notes, audit log timeline
-- **Admin Panel** — User role management and incident assignment in a tabbed interface
-- **Audit Logging** — Every status change and action is logged with timestamp and actor
-- **JWT Authentication** — Stateless auth with HTTP-only considerations
-- **Dark Cybersecurity UI** — Tailwind CSS dark theme with severity/status colour-coded badges
+Security Operations Centres drown in unstructured incident data. Analysts waste time chasing status updates in email threads and spreadsheets while real threats escalate. CCorp SIRTS replaces that chaos with a structured, role-aware ticketing system modelled on real-world IR workflows — giving SOC teams a single pane of glass from detection to closure, with every action logged and every decision traceable.
+
+---
+
+## Live Demo
+
+> 🎬 **Demo coming soon** — record a walkthrough GIF using [ScreenToGif](https://www.screentogif.com/) and drop it here as `docs/demo.gif`
+
+![CCorp SIRTS Demo](docs/demo.gif)
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        BROWSER                              │
+│         React 18 + Vite + Tailwind CSS + Recharts           │
+│   LoginPage │ Dashboard │ Incidents │ Detail │ Admin Panel  │
+└──────────────────────┬──────────────────────────────────────┘
+                       │ HTTP/REST (JWT Bearer Token)
+┌──────────────────────▼──────────────────────────────────────┐
+│                   EXPRESS.JS API (Port 5000)                 │
+│  Auth Middleware → Role Guard → Controllers → Prisma ORM    │
+│                                                             │
+│  /api/auth    /api/incidents    /api/users    /api/dashboard │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────────┐
+│              PostgreSQL Database (via Prisma ORM)           │
+│   Users │ Incidents │ Comments │ AuditLogs │ Sessions       │
+└─────────────────────────────────────────────────────────────┘
+                       │
+          ┌────────────▼────────────┐
+          │  NVD CVE API (External) │
+          │  CVE enrichment on      │
+          │  incident creation      │
+          └─────────────────────────┘
+```
+
+> 📐 Full diagram: [draw.io source coming soon — `docs/architecture.drawio`]
 
 ---
 
@@ -27,7 +59,22 @@
 | **Backend** | Node.js, Express.js (ES Modules) |
 | **Database** | PostgreSQL via Prisma ORM |
 | **Auth** | JWT (jsonwebtoken), bcryptjs |
-| **API** | RESTful JSON API |
+| **External API** | NVD CVE API (vulnerability enrichment) |
+| **API Style** | RESTful JSON |
+
+---
+
+## Key Features
+
+- **Role-Based Access Control** — ADMIN, SOC_LEAD, ANALYST, VIEWER roles with protected routes
+- **Incident Lifecycle Management** — Create, update, escalate, resolve, and close incidents
+- **SOC Dashboard** — Bar charts (incidents by day), pie charts (by category), stat cards, recent incidents feed
+- **Incident Detail View** — Full incident metadata, status updates, comments/notes, audit log timeline
+- **CVE Enrichment** — Incidents can be linked to CVE IDs with live data pulled from the NVD API
+- **Admin Panel** — User role management and incident assignment in a tabbed interface
+- **Audit Logging** — Every status change and action is logged with timestamp and actor
+- **JWT Authentication** — Stateless auth with HTTP-only considerations
+- **Dark Cybersecurity UI** — Tailwind CSS dark theme with severity/status colour-coded badges
 
 ---
 
@@ -70,7 +117,7 @@ ccorp-sirts/
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/Cyril556/ccorp-sirts.git
+git clone https://github.com/cyr6x/ccorp-sirts.git
 cd ccorp-sirts
 
 # Install server dependencies
@@ -83,7 +130,7 @@ cd ../client && npm install
 ### 2. Configure Environment
 
 ```bash
-# server/.env
+# server/.env (use .env.example as reference)
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/ccorp_sirts"
 JWT_SECRET="your-super-secret-jwt-key"
 PORT=5000
@@ -132,7 +179,7 @@ Open http://localhost:5173 in your browser.
 
 ---
 
-## API Endpoints
+## API Reference
 
 ### Authentication
 | Method | Endpoint | Description |
@@ -170,23 +217,33 @@ Open http://localhost:5173 in your browser.
 
 ## Severity Levels
 
-| Level | Colour | Description |
+| Level | Colour | SLA |
 |---|---|---|
-| CRITICAL | Red | Immediate response required |
-| HIGH | Orange | Respond within 1 hour |
-| MEDIUM | Yellow | Respond within 4 hours |
-| LOW | Green | Respond within 24 hours |
+| CRITICAL | 🔴 Red | Immediate response required |
+| HIGH | 🟠 Orange | Respond within 1 hour |
+| MEDIUM | 🟡 Yellow | Respond within 4 hours |
+| LOW | 🟢 Green | Respond within 24 hours |
 
 ---
 
-## Academic Context
+## Academic & Professional Context
 
-This project was developed as the Final Year Project for BSc (Hons) Cybersecurity and Networking. It demonstrates practical application of:
+Developed as the Final Year Project for BSc (Hons) Cybersecurity and Networking. Demonstrates practical application of:
 
-- **Network Security** — JWT authentication, role-based authorisation
-- **Incident Response** — Structured IR workflow (identify, contain, eradicate, recover)
-- **Secure Development** — Password hashing, protected API routes, input validation
-- **SOC Operations** — Analyst workflows, escalation paths, audit trails
+- **Incident Response** — Structured IR workflow aligned to NIST SP 800-61 (Identify → Contain → Eradicate → Recover → Lessons Learned)
+- **Network Security** — JWT authentication, role-based authorisation, stateless API design
+- **SOC Operations** — Analyst workflows, escalation paths, audit trails, CVE-linked enrichment
+- **Secure Development** — Password hashing (bcryptjs), protected API routes, input validation, environment variable separation
+
+---
+
+## Roadmap
+
+- [ ] Add demo GIF (`docs/demo.gif`)
+- [ ] Export draw.io architecture diagram (`docs/architecture.drawio`)
+- [ ] Expand CVE API integration with CVSS score display
+- [ ] Add email notification on CRITICAL incident creation
+- [ ] Dockerise full stack for one-command deployment
 
 ---
 
