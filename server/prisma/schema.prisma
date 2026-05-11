@@ -12,6 +12,7 @@ enum Role {
   ADMIN
   SOC_LEAD
   ANALYST
+  VIEWER
 }
 
 enum IncidentCategory {
