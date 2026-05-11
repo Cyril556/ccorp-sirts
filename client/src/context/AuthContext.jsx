@@ -7,6 +7,7 @@ const MOCK_USERS = [
   { id: 'mock-admin-1', name: 'Alice Admin', email: 'admin@ccorp.local', password: 'Admin@1234', role: 'ADMIN' },
   { id: 'mock-lead-1', name: 'Sam Lead', email: 'lead@ccorp.local', password: 'Lead@1234', role: 'SOC_LEAD' },
   { id: 'mock-analyst-1', name: 'John Analyst', email: 'analyst@ccorp.local', password: 'Analyst@1234', role: 'ANALYST' },
+    { id: 'mock-viewer-1', name: 'Val Viewer', email: 'viewer@ccorp.local', password: 'Viewer@1234', role: 'VIEWER' },
 ];
 
 export const AuthProvider = ({ children }) => {
