@@ -1,21 +1,10 @@
 # CCorp SIRTS
-**Security Incident Response & Ticketing System** — BSc (Hons) Cybersecurity & Networking | Final Year Project
 
-> A full-stack SOC web application for reporting, triaging, tracking, and resolving security incidents — with role-based access control, real-time dashboards, CVE enrichment, and a complete audit trail.
+**Security Incident Response & Ticketing System** — my final year project for BSc (Hons) Cybersecurity & Networking.
 
----
+A full-stack SOC ticketing tool: report, triage, and resolve incidents with role-based access (Admin / SOC Lead / Analyst / Viewer), a dashboard with incident stats, CVE enrichment via the NVD API on incident creation, and a full audit log of every status change.
 
-## Why This Exists
-
-Security Operations Centres drown in unstructured incident data. Analysts waste time chasing status updates in email threads and spreadsheets while real threats escalate. CCorp SIRTS replaces that chaos with a structured, role-aware ticketing system modelled on real-world IR workflows — giving SOC teams a single pane of glass from detection to closure, with every action logged and every decision traceable.
-
----
-
-## Live Demo
-
-> 🎬 **Demo coming soon** — record a walkthrough GIF using [ScreenToGif](https://www.screentogif.com/) and drop it here as `docs/demo.gif`
-
-![CCorp SIRTS Demo](docs/demo.gif)
+I built it to combine two things my degree covers separately — incident response process (mapped to NIST SP 800-61) and secure full-stack development — into one working system, rather than a slide deck.
 
 ---
 
@@ -47,7 +36,8 @@ Security Operations Centres drown in unstructured incident data. Analysts waste 
           └─────────────────────────┘
 ```
 
-> 📐 Full diagram: [draw.io source coming soon — `docs/architecture.drawio`]
+`[SCREENSHOT: dashboard view]`
+`[GIF: creating an incident → triaging → resolving, end to end]`
 
 ---
 
@@ -155,11 +145,11 @@ npx prisma generate
 npx prisma db seed
 ```
 
-### 4. Run Development Server (Frontend)
+### 4. Run the Dev Servers
 
 ```bash
 # Terminal 1 — Backend (port 5000)
-cd client && npm run dev
+cd server && npm run dev
 
 # Terminal 2 — Frontend (port 5173)
 cd client && npm run dev
@@ -227,24 +217,19 @@ Open http://localhost:5173 in your browser.
 
 ---
 
-## Academic & Professional Context
+## What this demonstrates
 
-Developed as the Final Year Project for BSc (Hons) Cybersecurity and Networking. Demonstrates practical application of:
-
-- **Incident Response** — Structured IR workflow aligned to NIST SP 800-61 (Identify → Contain → Eradicate → Recover → Lessons Learned)
-- **Network Security** — JWT authentication, role-based authorisation, stateless API design
-- **SOC Operations** — Analyst workflows, escalation paths, audit trails, CVE-linked enrichment
-- **Secure Development** — Password hashing (bcryptjs), protected API routes, input validation, environment variable separation
+Final year project for BSc (Hons) Cybersecurity and Networking — incident response workflow aligned to NIST SP 800-61 (Identify → Contain → Eradicate → Recover → Lessons Learned), combined with secure full-stack development: JWT auth, role-based authorisation, password hashing, protected routes, and input validation throughout.
 
 ---
 
 ## Roadmap
 
-- [ ] Add demo GIF (`docs/demo.gif`)
-- [ ] Export draw.io architecture diagram (`docs/architecture.drawio`)
-- [ ] Expand CVE API integration with CVSS score display
-- [ ] Add email notification on CRITICAL incident creation
-- [ ] Dockerise full stack for one-command deployment
+- [ ] Record a demo GIF
+- [ ] Export the architecture as a proper diagram
+- [ ] Add CVSS score display to CVE enrichment
+- [ ] Email notification on CRITICAL incident creation
+- [ ] Dockerise the full stack for one-command startup
 
 ---
 
